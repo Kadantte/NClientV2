@@ -16,6 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:fullBackupContent="@xml/backup_content"
         android:supportsRtl="true"
+        android:requestLegacyExternalStorage="true"
         android:theme="@style/DarkTheme">
 
         <activity android:name=".StatusManagerActivity" />
