@@ -74,6 +74,11 @@
     <PreferenceCategory
         android:title="@string/navigation_settings"
         app:iconSpaceReserved="false">
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="@string/key_change_page_buttons"
+            android:title="@string/title_change_page_buttons"
+            app:iconSpaceReserved="false" />
         <SeekBarPreference
             android:defaultValue="25"
             android:key="@string/key_max_history_size"
@@ -86,6 +91,15 @@
             android:key="col_screen"
             android:title="@string/navigation_settings_per_screen"
             app:iconSpaceReserved="false" />
+        <SeekBarPreference
+            android:defaultValue="5"
+            android:key="@string/key_offscreen_limit"
+            android:max="20"
+            android:summary="@string/summary_offscreen_limit"
+            android:title="@string/title_offscreen_limit"
+            app:iconSpaceReserved="false"
+            app:min="1"
+            app:showSeekBarValue="true" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -175,8 +189,8 @@
             app:iconSpaceReserved="false" />
         <Preference
             android:key="fetch_metadata"
-            android:summary="Download metadata for galleries downloaded before 2.3.0 which didn't have metadata like tags included"
-            android:title="Fetch metadata for old galleries"
+            android:summary="@string/summary_fetch_metadata"
+            android:title="@string/title_fetch_metadata"
             app:iconSpaceReserved="false" />
         <SwitchPreferenceCompat
             android:defaultValue="false"

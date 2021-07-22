@@ -24,7 +24,6 @@ import com.dar.nclientv2.SettingsActivity;
 import com.dar.nclientv2.StatusManagerActivity;
 import com.dar.nclientv2.async.MetadataFetcher;
 import com.dar.nclientv2.async.VersionChecker;
-import com.dar.nclientv2.async.database.Exporter;
 import com.dar.nclientv2.components.launcher.LauncherCalculator;
 import com.dar.nclientv2.components.launcher.LauncherReal;
 import com.dar.nclientv2.settings.Global;
@@ -115,6 +114,9 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
             new Thread(new MetadataFetcher(act)).start();
             return true;
         });
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            findPreference(getString(R.string.key_use_rtl)).setVisible(false);
+        }
         findPreference(getString(R.string.key_fake_icon)).setOnPreferenceChangeListener((preference, newValue) -> {
             PackageManager pm = act.getPackageManager();
             ComponentName name1 = new ComponentName(act, LauncherReal.class);
@@ -204,23 +206,11 @@ public class GeneralPreferenceFragment extends PreferenceFragmentCompat {
             return true;
         });
         findPreference("export").setOnPreferenceClickListener(preference -> {
-            try {
-                String path = Exporter.exportData(act);
-                Toast.makeText(act, act.getString(R.string.exported_backup_file_toast, path), Toast.LENGTH_SHORT).show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            act.exportSettings();
             return true;
         });
         findPreference("import").setOnPreferenceClickListener(preference -> {
-            try {
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT).setType("application/zip");
-                act.startActivityForResult(intent, 132);
-                //ExporterV2.importData(act,new File(Global.BACKUPFOLDER,"Backup.zip"));
-                //System.exit(0);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            act.importSettings();
             return true;
         });
 

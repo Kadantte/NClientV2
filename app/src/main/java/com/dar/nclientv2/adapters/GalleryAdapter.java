@@ -30,11 +30,11 @@ import com.dar.nclientv2.async.database.Queries;
 import com.dar.nclientv2.components.classes.Size;
 import com.dar.nclientv2.components.widgets.CustomGridLayoutManager;
 import com.dar.nclientv2.files.GalleryFolder;
+import com.dar.nclientv2.github.chrisbanes.photoview.PhotoView;
 import com.dar.nclientv2.settings.Global;
 import com.dar.nclientv2.utility.ImageDownloadUtility;
 import com.dar.nclientv2.utility.LogUtility;
 import com.dar.nclientv2.utility.Utility;
-import com.github.chrisbanes.photoview.PhotoView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -141,7 +141,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull final GalleryAdapter.ViewHolder holder, int position) {
 
-        switch (positionToType(holder.getAdapterPosition())) {
+        switch (positionToType(holder.getBindingAdapterPosition())) {
             case TAG:
                 loadTagLayout(holder);
                 break;
@@ -255,12 +255,12 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     }
 
     private void loadPageLayout(ViewHolder holder) {
-        final int pos = holder.getAdapterPosition();
+        final int pos = holder.getBindingAdapterPosition();
         final ImageView imgView = holder.master.findViewById(R.id.image);
 
-        imgView.setOnClickListener(v -> startGallery(holder.getAdapterPosition()));
+        imgView.setOnClickListener(v -> startGallery(holder.getBindingAdapterPosition()));
         imgView.setOnLongClickListener(null);
-        holder.master.setOnClickListener(v -> startGallery(holder.getAdapterPosition()));
+        holder.master.setOnClickListener(v -> startGallery(holder.getBindingAdapterPosition()));
         holder.master.setOnLongClickListener(null);
 
         holder.pageNumber.setText(String.format(Locale.US, "%d", pos));
@@ -291,7 +291,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
             photoView.setOnMatrixChangeListener(rect -> photoView.setAllowParentInterceptOnEdge(photoView.getScale() <= 1f));
             photoView.setOnClickListener(v -> {
                 if (photoView.getScale() <= 1f)
-                    startGallery(holder.getAdapterPosition());
+                    startGallery(holder.getBindingAdapterPosition());
             });
             View.OnLongClickListener listener = v -> {
                 optionDialog(imgView, pos);

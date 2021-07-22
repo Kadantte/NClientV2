@@ -68,7 +68,7 @@ public class VersionChecker {
                 downloadUrl = release.downloadUrl;
                 GitHubRelease finalRelease = release;
                 context.runOnUiThread(() -> {
-                    if (extractVersion(actualVersionName) >= extractVersion(finalRelease.versionCode)) {
+                    if (downloadUrl == null || extractVersion(actualVersionName) >= extractVersion(finalRelease.versionCode)) {
                         if (!silent)
                             Toast.makeText(context, R.string.no_updates_found, Toast.LENGTH_SHORT).show();
                     } else {
@@ -168,7 +168,7 @@ public class VersionChecker {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
         LogUtility.d("" + context);
         builder.setTitle(beta ? R.string.new_beta_version_found : R.string.new_version_found);
-        builder.setIcon(R.drawable.ic_file_download);
+        builder.setIcon(R.drawable.ic_file);
         builder.setMessage(context.getString(R.string.update_version_format, versionName, latestVersion, finalBody));
         builder.setPositiveButton(R.string.install, (dialog, which) -> {
             if (Global.hasStoragePermission(context)) downloadVersion(latestVersion);
@@ -193,6 +193,7 @@ public class VersionChecker {
             }
             f.delete();
         }
+        if (downloadUrl == null) return;
         LogUtility.d(f.getAbsolutePath());
         Global.getClient(context).newCall(new Request.Builder().url(downloadUrl).build()).enqueue(new Callback() {
             @Override
@@ -240,6 +241,7 @@ public class VersionChecker {
             context.startActivity(intent);
         }
     }
+
 
     public static class GitHubRelease {
         String versionCode, body, downloadUrl;

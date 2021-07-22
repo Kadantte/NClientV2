@@ -56,6 +56,7 @@ public class ListAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder>
         if (context.isFinishing()) return;
         try {
             if (Global.isDestroyed(context)) return;
+
             ImageDownloadUtility.loadImage(context, ent.getThumbnail(), holder.imgView);
         } catch (VerifyError ignore) {
         }
@@ -64,7 +65,7 @@ public class ListAdapter extends RecyclerView.Adapter<GenericAdapter.ViewHolder>
     @Override
     public void onBindViewHolder(@NonNull final GenericAdapter.ViewHolder holder, int position) {
         if (position >= mDataset.size()) return;
-        final SimpleGallery ent = mDataset.get(holder.getAdapterPosition());
+        final SimpleGallery ent = mDataset.get(holder.getBindingAdapterPosition());
         if (ent == null) return;
         if (!Global.showTitles()) {
             holder.title.setAlpha(0f);

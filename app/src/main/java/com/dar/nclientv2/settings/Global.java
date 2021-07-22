@@ -82,14 +82,14 @@ public class Global {
     private static TitleType titleType;
     private static SortType sortType;
     private static LocalSortType localSortType;
-    private static boolean invertFix, hideMultitask, enableBeta, volumeOverride, zoomOneColumn, keepHistory, lockScreen, onlyTag, showTitles, removeAvoidedGalleries, useRtl;
+    private static boolean invertFix, buttonChangePage, hideMultitask, enableBeta, volumeOverride, zoomOneColumn, keepHistory, lockScreen, onlyTag, showTitles, removeAvoidedGalleries, useRtl;
     private static ThemeScheme theme;
     private static DataUsageType usageMobile, usageWifi;
     private static String lastVersion, mirror;
     private static int maxHistory, columnCount, maxId, galleryWidth = -1, galleryHeight = -1;
     private static int colPortStat, colLandStat, colPortHist, colLandHist, colPortMain, colLandMain, colPortDownload, colLandDownload, colLandFavorite, colPortFavorite;
     private static boolean infiniteScrollMain, infiniteScrollFavorite;
-    private static int defaultZoom;
+    private static int defaultZoom, offscreenLimit;
     private static Point screenSize;
 
     public static long recursiveSize(File path) {
@@ -288,11 +288,13 @@ public class Global {
         enableBeta = shared.getBoolean(context.getString(R.string.key_enable_beta), true);
         columnCount = shared.getInt(context.getString(R.string.key_column_count), 2);
         showTitles = shared.getBoolean(context.getString(R.string.key_show_titles), true);
+        buttonChangePage = shared.getBoolean(context.getString(R.string.key_change_page_buttons), true);
         lockScreen = shared.getBoolean(context.getString(R.string.key_disable_lock), false);
         hideMultitask = shared.getBoolean(context.getString(R.string.key_hide_multitasking), true);
         infiniteScrollFavorite = shared.getBoolean(context.getString(R.string.key_infinite_scroll_favo), false);
         infiniteScrollMain = shared.getBoolean(context.getString(R.string.key_infinite_scroll_main), false);
         maxId = shared.getInt(context.getString(R.string.key_max_id), 300000);
+        offscreenLimit = shared.getInt(context.getString(R.string.key_offscreen_limit), 5);
         maxHistory = shared.getInt(context.getString(R.string.key_max_history_size), 2);
         defaultZoom = shared.getInt(context.getString(R.string.key_default_zoom), 100);
         colPortMain = shared.getInt(context.getString(R.string.key_column_port_main), 2);
@@ -316,6 +318,10 @@ public class Global {
         }
         onlyLanguage = Language.values()[x];
 
+    }
+
+    public static boolean isButtonChangePage() {
+        return buttonChangePage;
     }
 
     public static boolean hideMultitask() {
@@ -381,6 +387,19 @@ public class Global {
     }
 
     public static Locale initLanguage(Context context) {
+        Resources resources = context.getResources();
+        Locale l = getLanguage(context);
+        Configuration c = new Configuration(resources.getConfiguration());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            c.setLocale(l);
+        } else {
+            c.locale = l;
+        }
+        resources.updateConfiguration(c, resources.getDisplayMetrics());
+        return l;
+    }
+
+    public static Locale getLanguage(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("Settings", 0);
         String prefLangKey = context.getString(R.string.key_language);
         String defaultValue = context.getString(R.string.key_default_value);
@@ -416,6 +435,10 @@ public class Global {
                 }
         }
         return false;
+    }
+
+    public static int getOffscreenLimit() {
+        return offscreenLimit;
     }
 
     private static String getLocaleCode(Locale locale) {
@@ -698,15 +721,19 @@ public class Global {
         c.uiMode |= Configuration.UI_MODE_NIGHT_NO; //disable night mode
     }
 
+    private static void invertFix(AppCompatActivity context) {
+        if (!invertFix) return;
+        Resources resources = context.getResources();
+        Configuration c = new Configuration(resources.getConfiguration());
+        updateConfigurationNightMode(context, c);
+        resources.updateConfiguration(c, resources.getDisplayMetrics());
+    }
+
     public static void initActivity(AppCompatActivity context) {
         initScreenSize(context);
         initGallerySize();
-        Resources resources = context.getResources();
-        Locale locale = initLanguage(context);
-        Configuration c = new Configuration(context.getResources().getConfiguration());
-        if (invertFix) updateConfigurationNightMode(context, c);
-        c.locale = locale;
-        resources.updateConfiguration(c, resources.getDisplayMetrics());
+        initLanguage(context);
+        invertFix(context);
 
         switch (initTheme(context)) {
             case LIGHT:

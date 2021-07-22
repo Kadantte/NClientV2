@@ -23,8 +23,8 @@ import com.dar.nclientv2.LocalActivity;
 import com.dar.nclientv2.R;
 import com.dar.nclientv2.api.local.LocalGallery;
 import com.dar.nclientv2.api.local.LocalSortType;
-import com.dar.nclientv2.async.CreatePDF;
-import com.dar.nclientv2.async.CreateZIP;
+import com.dar.nclientv2.async.converters.CreatePDF;
+import com.dar.nclientv2.async.converters.CreateZIP;
 import com.dar.nclientv2.async.database.Queries;
 import com.dar.nclientv2.async.downloader.DownloadGalleryV2;
 import com.dar.nclientv2.async.downloader.DownloadObserver;
@@ -185,8 +185,12 @@ public class LocalAdapter extends MultichoiceAdapter<Object, LocalAdapter.ViewHo
 
     private void sortItems(ArrayList<Object> arr) {
         LocalSortType type = Global.getLocalSortType();
-        Collections.sort(arr, getComparator(type.type));
-        if (type.descending) Collections.reverse(arr);
+        if (type.type == LocalSortType.Type.RANDOM) {
+            Collections.shuffle(arr, Utility.RANDOM);
+        } else {
+            Collections.sort(arr, getComparator(type.type));
+            if (type.descending) Collections.reverse(arr);
+        }
     }
 
     private Comparator<Object> getComparator(LocalSortType.Type type) {
